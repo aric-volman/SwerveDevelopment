@@ -41,6 +41,7 @@ public class SwerveTeleop extends CommandBase {
       this.addRequirements(swerve);
    }
 
+   @Override
    public void execute() {
 
       // Get values after deadband and rate limiting
@@ -50,5 +51,11 @@ public class SwerveTeleop extends CommandBase {
 
       // Drive swerve with values
       this.swerve.drive((new Translation2d(translationVal, strafeVal)).times(Constants.SwerveConstants.maxTranslationalSpeed), rotationVal * Constants.SwerveConstants.maxAngularVelocity, this.robotCentricSup.getAsBoolean(), false);
+   }
+
+   // Called once the command ends or is interrupted.
+   @Override
+   public void end(boolean interrupted) {
+      this.swerve.drive(new Translation2d(0, 0), 0, true, false);
    }
 }

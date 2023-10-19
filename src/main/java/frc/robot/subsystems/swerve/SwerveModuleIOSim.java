@@ -11,6 +11,7 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -72,17 +73,24 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
          SmartDashboard.putNumber("Open Loop Drive #" + this.num, percent);
          this.driveSim.setInputVoltage(percent * 12.0);
       } else {
-         // Set setpoint of the drive PID controller
-         this.drivePID.setSetpoint(state.speedMetersPerSecond);
+         if (!(DriverStation.isDisabled() | DriverStation.isEStopped())) {  
+            // Set setpoint of the drive PID controller
+            this.drivePID.setSetpoint(state.speedMetersPerSecond);
 
-         // Find measurement in m/s and calculate PID action
-         percent = this.driveSim.getAngularVelocityRadPerSec() * Math.PI * Constants.SwerveConstants.wheelDiameterMeters / Constants.SwerveConstants.driveGearRatio;
-         double output = this.drivePID.calculate(percent);
+            // Find measurement in m/s and calculate PID action
+            percent = this.driveSim.getAngularVelocityRadPerSec() * Math.PI * Constants.SwerveConstants.wheelDiameterMeters / Constants.SwerveConstants.driveGearRatio;
+            double output = this.drivePID.calculate(percent);
 
-         // Output in volts to motor
-         driveVolts = output;
-         this.driveSim.setInputVoltage(output);
-         SmartDashboard.putNumber("Closed Loop Drive #" + this.num, output);
+            // Output in volts to motor
+            driveVolts = output;
+            this.driveSim.setInputVoltage(driveVolts);
+            SmartDashboard.putNumber("Closed Loop Drive #" + this.num, driveVolts);
+         } else {
+            // Output in volts to motor
+            driveVolts = 0.0;
+            this.driveSim.setInputVoltage(0.0);
+            SmartDashboard.putNumber("Closed Loop Drive #" + this.num, 0.0);
+         }
       }
 
       // Turn with PID in volts
