@@ -4,14 +4,14 @@
     "name": "jar (in project SwerveDevelopment)",
     "extensions": [
       {
+        "name": "Sim DriverStation",
+        "libName": "C:\\Users\\aricv\\Desktop\\SwerveDevelopment\\build\\jni\\release\\halsim_ds_socket.dll",
+        "defaultEnabled": false
+      },
+      {
         "name": "Sim GUI",
         "libName": "C:\\Users\\aricv\\Desktop\\SwerveDevelopment\\build\\jni\\release\\halsim_gui.dll",
         "defaultEnabled": true
-      },
-      {
-        "name": "Use Real DriverStation",
-        "libName": "C:\\Users\\aricv\\Desktop\\SwerveDevelopment\\build\\jni\\release\\halsim_ds_socket.dll",
-        "defaultEnabled": false
       }
     ],
     "environment": {},
