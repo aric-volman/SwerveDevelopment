@@ -12,11 +12,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class SwerveDrive extends SubsystemBase {
    // Create Navx
@@ -76,6 +79,12 @@ public class SwerveDrive extends SubsystemBase {
       this.poseEstimator.update(this.getRotation(), this.modulePositions);
       this.field.setRobotPose(this.getPose());
 
+      var translations = getModuleTranslations();
+      for(int i = 0; i < 4; ++i) {
+         Rotation2d moduleRot = Rotation2d.fromRadians(Math.PI*2).minus(modulePositions[i].angle);
+         Rotation2d relRot = moduleRot.plus(getPose().getRotation());
+         field.getObject("Module"+i).setPose(getPose().getX()+translations[i].getX()*Math.sqrt(Constants.SwerveConstants.trackWidthX), getPose().getY()+translations[i].getY()*Math.sqrt(Constants.SwerveConstants.trackWidthY), relRot);
+      }
       // Put field on SmartDashboard
       SmartDashboard.putData("Field", this.field);
    }
@@ -109,10 +118,19 @@ public class SwerveDrive extends SubsystemBase {
     * @param isOpenLoop Whether or not to control robot with closed or open loop control
     */
    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-      SwerveModuleState[] swerveModuleStates = this.kinematics.toSwerveModuleStates(fieldRelative ? 
-         ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, this.getRotation()) : 
-         new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
-      SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.SwerveConstants.maxSpeed);
+
+      ChassisSpeeds speeds = fieldRelative ? 
+      ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, this.getRotation()) : 
+      new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+
+      speeds = discretize(speeds);
+
+      SmartDashboard.putNumber("MagnitudeVel", Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2) + Math.pow(speeds.vyMetersPerSecond, 2)));
+
+      SwerveModuleState[] swerveModuleStates = this.kinematics.toSwerveModuleStates(speeds);
+
+      // MUST USE SECOND TYPE OF METHOD
+      SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, speeds,  Units.feetToMeters(19), Constants.SwerveConstants.maxTranslationalSpeed, Constants.SwerveConstants.maxAngularVelocity);
 
       for(int i = 0; i < 4; ++i) {
          this.moduleIO[i].setModuleState(swerveModuleStates[i], isOpenLoop);
@@ -170,5 +188,31 @@ public class SwerveDrive extends SubsystemBase {
          new Translation2d(-Constants.SwerveConstants.trackWidthX / 2.0, Constants.SwerveConstants.trackWidthY / 2.0), 
          new Translation2d(-Constants.SwerveConstants.trackWidthX / 2.0, -Constants.SwerveConstants.trackWidthY / 2.0)};
    }
+
+   /** Credit: WPIlib 2024 + Patribots (Author: Alexander Hamilton)
+   * Discretizes a continuous-time chassis speed.
+   *
+   * @param vx    Forward velocity.
+   * @param vy    Sideways velocity.
+   * @param omega Angular velocity.
+   */
+  public ChassisSpeeds discretize(ChassisSpeeds speeds) {
+      if (!RobotContainer.getSimOrNot()) {
+         return speeds;
+      }
+      
+      double dt = 0.02;
+      
+      var desiredDeltaPose = new Pose2d(
+      speeds.vxMetersPerSecond * dt, 
+      speeds.vyMetersPerSecond * dt, 
+      new Rotation2d(speeds.omegaRadiansPerSecond * dt * -2)
+      );
+
+      var twist = new Pose2d().log(desiredDeltaPose);
+
+      return new ChassisSpeeds((twist.dx / dt), (twist.dy / dt), (speeds.omegaRadiansPerSecond));
+   }
+
 
 }

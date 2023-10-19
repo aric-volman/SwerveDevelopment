@@ -18,6 +18,8 @@ public class RobotContainer {
    private final int strafeAxis = 1;
    private final int rotationAxis = 0;
 
+   private static boolean isSim = Robot.isSimulation();
+
    // Creates array of swerve modules for use in SwerveDrive object
    SwerveModuleIO[] swerveMods = new SwerveModuleIOSim[]{
       new SwerveModuleIOSim(0), 
@@ -50,5 +52,13 @@ public class RobotContainer {
 
    public Command getAutonomousCommand() {
       return null;
+   }
+
+   /**
+    * Gets Robot.isReal() from RobotContainer (slow when calling every loop)
+    * @return If simulated or not
+    */
+   public static boolean getSimOrNot() {
+      return isSim;
    }
 }

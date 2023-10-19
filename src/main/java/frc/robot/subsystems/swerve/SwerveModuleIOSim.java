@@ -5,22 +5,27 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class SwerveModuleIOSim implements SwerveModuleIO {
+
    // Create drive and turn sim motors
-   private final DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), 1.0, 0.01);
-   private final DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), 1.0, 1.0E-6D);
+   private final DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), Constants.SwerveConstants.driveGearRatio, 0.01); // 0.01
+   private final DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), Constants.SwerveConstants.turnGearRatio, 0.00000001);
 
    // Create PID controllers with constants
    // Note lack of feedforward
    // Native unit: volt
-   private final PIDController drivePID = new PIDController(0.5, 0.0, 0.0);
-   private final PIDController turnPID = new PIDController(0.5, 0.0, 0.01);
+   private final PIDController drivePID = new PIDController(1.5, 0.0, 0.0);
+   private final PIDController turnPID = new PIDController(10.0, 0.0, 0.0);
 
    // Create variables to hold driving and turning voltage
    private double driveVolts = 0.0;

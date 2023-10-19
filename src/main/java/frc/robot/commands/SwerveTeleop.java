@@ -20,9 +20,9 @@ public class SwerveTeleop extends CommandBase {
    private BooleanSupplier robotCentricSup;
 
    // Slew rate limit controls
-   private SlewRateLimiter translationLimiter = new SlewRateLimiter(3.0D);
-   private SlewRateLimiter strafeLimiter = new SlewRateLimiter(3.0D);
-   private SlewRateLimiter rotationLimiter = new SlewRateLimiter(3.0D);
+   private SlewRateLimiter translationLimiter = new SlewRateLimiter(30.0D);
+   private SlewRateLimiter strafeLimiter = new SlewRateLimiter(30.0D);
+   private SlewRateLimiter rotationLimiter = new SlewRateLimiter(30.0D);
 
    /**
     * Creates a SwerveTeleop command, for controlling a Swerve bot.
@@ -49,6 +49,6 @@ public class SwerveTeleop extends CommandBase {
       double rotationVal = this.rotationLimiter.calculate(MathUtil.applyDeadband(this.rotationSup.getAsDouble(), Constants.SwerveConstants.deadBand));
 
       // Drive swerve with values
-      this.swerve.drive((new Translation2d(translationVal, strafeVal)).times(Constants.SwerveConstants.maxSpeed), rotationVal * Constants.SwerveConstants.maxAngularVelocity, this.robotCentricSup.getAsBoolean(), false);
+      this.swerve.drive((new Translation2d(translationVal, strafeVal)).times(Constants.SwerveConstants.maxTranslationalSpeed), rotationVal * Constants.SwerveConstants.maxAngularVelocity, this.robotCentricSup.getAsBoolean(), false);
    }
 }

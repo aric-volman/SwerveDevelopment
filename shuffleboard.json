@@ -76,7 +76,11 @@
               "_showGlyph": false,
               "Game/Game": "A2023_Charged_Up",
               "Visuals/Robot Icon Size": 50.0,
-              "Visuals/Show Outside Circles": false
+              "Visuals/Show Outside Circles": false,
+              "Colors/Module1": "#FFFFFFFF",
+              "Colors/Module0": "#FFFFFFFF",
+              "Colors/Module3": "#FFFFFFFF",
+              "Colors/Module2": "#FFFFFFFF"
             }
           },
           "0,1": {
@@ -198,6 +202,19 @@
               "Visuals/Show tick mark ring": true,
               "Visuals/Counter clockwise": false
             }
+          },
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/MagnitudeVel",
+              "_title": "MagnitudeVel",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -217,9 +234,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 0.0,
-    "y": 0.0,
-    "width": 1603.617431640625,
-    "height": 908.2435302734375
+    "x": -7.5130438804626465,
+    "y": -7.5130438804626465,
+    "width": 1617.8087158203125,
+    "height": 916.59130859375
   }
 }
