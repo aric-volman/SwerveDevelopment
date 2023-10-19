@@ -1,4 +1,3 @@
-/* Decompiler 7ms, total 265ms, lines 65 */
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
