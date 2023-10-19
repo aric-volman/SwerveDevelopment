@@ -19,13 +19,13 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
 
    // Create drive and turn sim motors
    private final DCMotorSim driveSim = new DCMotorSim(DCMotor.getNEO(1), Constants.SwerveConstants.driveGearRatio, 0.01); // 0.01
-   private final DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), Constants.SwerveConstants.turnGearRatio, 0.00000001);
+   private final DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), Constants.SwerveConstants.turnGearRatio, 0.000001);
 
    // Create PID controllers with constants
    // Note lack of feedforward
    // Native unit: volt
    private final PIDController drivePID = new PIDController(1.5, 0.0, 0.0);
-   private final PIDController turnPID = new PIDController(10.0, 0.0, 0.0);
+   private final PIDController turnPID = new PIDController(5.0, 0.0, 0.06);
 
    // Create variables to hold driving and turning voltage
    private double driveVolts = 0.0;
@@ -43,6 +43,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     */
    public SwerveModuleIOSim(int num) {
       this.num = num;
+      turnPID.enableContinuousInput(0, Math.PI * 2.0);
    }
 
    public void setDriveVoltage(double voltage) {
