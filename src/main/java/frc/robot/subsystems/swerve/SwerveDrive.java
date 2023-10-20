@@ -82,12 +82,8 @@ public class SwerveDrive extends SubsystemBase {
       this.poseEstimator.update(this.getRotation(), this.modulePositions);
       this.field.setRobotPose(this.getPose());
 
-      var translations = getModuleTranslations();
-      for(int i = 0; i < 4; ++i) {
-         Rotation2d moduleRot = Rotation2d.fromRadians(Math.PI*2).minus(modulePositions[i].angle);
-         Rotation2d relRot = moduleRot.plus(getPose().getRotation());
-         field.getObject("Module"+i).setPose(getPose().getX()+translations[i].getX()*Math.sqrt(Constants.SwerveConstants.trackWidthX), getPose().getY()+translations[i].getY()*Math.sqrt(Constants.SwerveConstants.trackWidthY), relRot);
-      }
+      drawModulePoses();
+
       // Put field on SmartDashboard
       SmartDashboard.putData("Field", this.field);
 
@@ -217,6 +213,19 @@ public class SwerveDrive extends SubsystemBase {
       return states;
    }
 
+   /**
+    * Accurately draws module poses on SmartDashboard
+    */
+   public void drawModulePoses() {
+      var translations = getModuleTranslations();
+      for(int i = 0; i < 4; ++i) {
+         Rotation2d moduleRot = modulePositions[i].angle;
+         Rotation2d relRot = moduleRot.plus(getPose().getRotation());
+         // Multiply translation with hypotenuse and add this to the pose of the robot
+         field.getObject("Module"+i).setPose(getPose().getX()+translations[i].getX()*Constants.SwerveConstants.hypotenuse, 
+            getPose().getY()+translations[i].getY()*Constants.SwerveConstants.hypotenuse, relRot);
+      }
+   }
 
    /** 
     * Gets module states as double[] for AdvantageScope compatibility
