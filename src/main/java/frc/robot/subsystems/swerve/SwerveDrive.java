@@ -268,7 +268,7 @@ public class SwerveDrive extends SubsystemBase {
       var desiredDeltaPose = new Pose2d(
          speeds.vxMetersPerSecond * dt, 
          speeds.vyMetersPerSecond * dt, 
-         new Rotation2d(speeds.omegaRadiansPerSecond * dt * -2.2)
+         new Rotation2d(speeds.omegaRadiansPerSecond * dt * -2.6)
       );
 
       var twist = new Pose2d().log(desiredDeltaPose);
