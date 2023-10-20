@@ -50,7 +50,7 @@ public class SwerveTeleop extends CommandBase {
       double rotationVal = this.rotationLimiter.calculate(MathUtil.applyDeadband(this.rotationSup.getAsDouble(), Constants.SwerveConstants.deadBand));
 
       // Drive swerve with values
-      this.swerve.drive((new Translation2d(translationVal, strafeVal)).times(Constants.SwerveConstants.maxTranslationalSpeed), rotationVal * Constants.SwerveConstants.maxAngularVelocity, this.robotCentricSup.getAsBoolean(), false);
+      this.swerve.drive((new Translation2d(translationVal, strafeVal)).times(Constants.SwerveConstants.maxChassisTranslationalSpeed), rotationVal * Constants.SwerveConstants.maxChassisAngularVelocity, this.robotCentricSup.getAsBoolean(), false);
    }
 
    // Called once the command ends or is interrupted.

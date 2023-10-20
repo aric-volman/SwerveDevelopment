@@ -21,7 +21,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
    // Create PID controllers with constants
    // Note lack of feedforward
    // Native unit: volt
-   private final PIDController drivePID = new PIDController(1.5, 0.0, 0.0);
+   private final PIDController drivePID = new PIDController(12.0, 0.0, 0.06);
    private final PIDController turnPID = new PIDController(5.0, 0.0, 0.06);
 
    // Create variables to hold driving and turning voltage
@@ -81,6 +81,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
             driveVolts = output;
             this.driveSim.setInputVoltage(driveVolts);
             SmartDashboard.putNumber("Closed Loop Drive #" + this.num, driveVolts);
+            SmartDashboard.putNumber("DriveVel #" + this.num, state.speedMetersPerSecond);
          } else {
             // Output in volts to motor
             driveVolts = 0.0;

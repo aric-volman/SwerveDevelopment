@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -135,7 +136,7 @@ public class SwerveDrive extends SubsystemBase {
       SwerveModuleState[] swerveModuleStates = this.kinematics.toSwerveModuleStates(speeds);
 
       // MUST USE SECOND TYPE OF METHOD
-      SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, speeds,  Units.feetToMeters(19), Constants.SwerveConstants.maxTranslationalSpeed, Constants.SwerveConstants.maxAngularVelocity);
+      SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, speeds, Constants.SwerveConstants.maxLinearVelocityMeters, Constants.SwerveConstants.maxChassisTranslationalSpeed, Constants.SwerveConstants.maxChassisAngularVelocity);
 
       for(int i = 0; i < 4; ++i) {
          this.moduleIO[i].setModuleState(swerveModuleStates[i], isOpenLoop);
@@ -168,7 +169,39 @@ public class SwerveDrive extends SubsystemBase {
     * Get Pose2d of poseEstimator.
     */
    public Pose2d getPose() {
-      return this.poseEstimator.getEstimatedPosition();
+      return poseEstimator.getEstimatedPosition(); 
+   }
+
+   /** 
+    * Reset pose of robot to pose
+    */
+   public void resetPose(Pose2d pose) {
+      poseEstimator.resetPosition(new Rotation2d(), modulePositions, pose);
+   }
+
+   /** 
+    * Get chassis speeds for PathPlannerLib
+    */
+   public ChassisSpeeds getRobotRelativeSpeeds() {
+      return ChassisSpeeds.fromFieldRelativeSpeeds(kinematics.toChassisSpeeds(getStates()), getRotation());
+   }
+
+   /** 
+    * Drive the robot for PathPlannerLib
+    */
+   public void driveRobotRelative(ChassisSpeeds speeds) {
+      // speeds = discretize(speeds);
+
+      SmartDashboard.putNumber("MagnitudeVel", Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2) + Math.pow(speeds.vyMetersPerSecond, 2)));
+
+      SwerveModuleState[] swerveModuleStates = this.kinematics.toSwerveModuleStates(speeds);
+
+      // MUST USE SECOND TYPE OF METHOD
+      SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, speeds,  Units.feetToMeters(12), Constants.SwerveConstants.maxChassisTranslationalSpeed, Constants.SwerveConstants.maxChassisAngularVelocity);
+
+      for(int i = 0; i < 4; ++i) {
+         this.moduleIO[i].setModuleState(swerveModuleStates[i], false);
+      }
    }
 
    /**
@@ -233,9 +266,9 @@ public class SwerveDrive extends SubsystemBase {
       double dt = 0.02;
       
       var desiredDeltaPose = new Pose2d(
-      speeds.vxMetersPerSecond * dt, 
-      speeds.vyMetersPerSecond * dt, 
-      new Rotation2d(speeds.omegaRadiansPerSecond * dt * -3)
+         speeds.vxMetersPerSecond * dt, 
+         speeds.vyMetersPerSecond * dt, 
+         new Rotation2d(speeds.omegaRadiansPerSecond * dt * -2.2)
       );
 
       var twist = new Pose2d().log(desiredDeltaPose);
