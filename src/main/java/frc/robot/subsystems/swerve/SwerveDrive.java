@@ -1,5 +1,8 @@
 package frc.robot.subsystems.swerve;
 
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
@@ -13,7 +16,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -87,6 +89,9 @@ public class SwerveDrive extends SubsystemBase {
       }
       // Put field on SmartDashboard
       SmartDashboard.putData("Field", this.field);
+
+      SmartDashboard.putNumberArray("States", getDoubleStates());
+      SmartDashboard.putNumber("Robot Rotation", getPose().getRotation().getRadians());
    }
 
    public void simulationPeriodic() {
@@ -177,6 +182,30 @@ public class SwerveDrive extends SubsystemBase {
       }
 
       return states;
+   }
+
+
+   /** 
+    * Gets module states as double[] for AdvantageScope compatibility
+    */
+   public double[] getDoubleStates() {
+      SwerveModuleState[] states = getStates();
+      ArrayList<Double> ret = new ArrayList<Double>();
+
+      for(int i = 0; i < 4; ++i) {
+         double num = 0;
+         num = states[i].angle.getRadians();
+         ret.add(num);
+         num = states[i].speedMetersPerSecond;
+         ret.add(num);
+      }
+
+      Double[] actual = new Double[8];
+      ret.toArray(actual);
+
+
+      return Stream.of(actual).mapToDouble(Double::doubleValue).toArray();
+
    }
 
    /**
