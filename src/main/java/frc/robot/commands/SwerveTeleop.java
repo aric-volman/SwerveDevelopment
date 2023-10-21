@@ -49,10 +49,8 @@ public class SwerveTeleop extends CommandBase {
       double translationVal = this.translationLimiter.calculate(MathUtil.applyDeadband(this.translationSup.getAsDouble(), Constants.SwerveConstants.deadBand));
       double strafeVal = this.strafeLimiter.calculate(MathUtil.applyDeadband(this.strafeSup.getAsDouble(), Constants.SwerveConstants.deadBand));
 
-      // Support for simulation WASD with one joystick
-      if (RobotContainer.getSimOrNot()) {
-         translationVal *= -1.0;
-      }
+      // Support for simulation WASD or real Xbox
+      translationVal *= -1.0;
       
       double rotationVal = this.rotationLimiter.calculate(MathUtil.applyDeadband(this.rotationSup.getAsDouble(), Constants.SwerveConstants.deadBand));
 

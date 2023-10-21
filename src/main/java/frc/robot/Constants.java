@@ -22,7 +22,7 @@ public final class Constants {
 
         public static final double maxChassisAngularVelocity = Math.PI * 2.0 * 1.25; // A decent number but not fast enough
 
-        public static final double deadBand = 0.0;
+        public static final double deadBand = 0.1;
     }
 
 }

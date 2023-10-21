@@ -11,13 +11,14 @@ public class RobotContainer {
 
    // Xbox + an additional one for PC use
    private final Joystick driver = new Joystick(0);
-   private final Joystick d2 = new Joystick(1);
+   private final Joystick dSim = new Joystick(1);
 
    // Define axises for using joystick
    private final int translationAxis = 0;
    private final int strafeAxis = 1;
-   private final int rotationAxis = 0;
+   // private final int rotationAxis = 4; // For xBox
 
+   private final int rotationAxis = 0;
    private static boolean isSim = Robot.isSimulation();
 
    // Creates array of swerve modules for use in SwerveDrive object
@@ -40,7 +41,7 @@ public class RobotContainer {
       }, () -> {
          return -this.driver.getRawAxis(strafeAxis);
       }, () -> {
-         return -this.d2.getRawAxis(rotationAxis);
+         return -this.dSim.getRawAxis(rotationAxis);
       }, () -> {
          return true;
       }));
