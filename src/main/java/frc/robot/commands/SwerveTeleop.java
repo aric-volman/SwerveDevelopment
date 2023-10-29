@@ -5,7 +5,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -21,9 +20,9 @@ public class SwerveTeleop extends CommandBase {
    private BooleanSupplier robotCentricSup;
 
    // Slew rate limit controls
-   private SlewRateLimiter translationLimiter = new SlewRateLimiter(30.0D);
-   private SlewRateLimiter strafeLimiter = new SlewRateLimiter(30.0D);
-   private SlewRateLimiter rotationLimiter = new SlewRateLimiter(30.0D);
+   private SlewRateLimiter translationLimiter = new SlewRateLimiter(10.0D);
+   private SlewRateLimiter strafeLimiter = new SlewRateLimiter(10.0D);
+   private SlewRateLimiter rotationLimiter = new SlewRateLimiter(1.0D);
 
    /**
     * Creates a SwerveTeleop command, for controlling a Swerve bot.

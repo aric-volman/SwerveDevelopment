@@ -135,7 +135,7 @@ public class SwerveDrive extends SubsystemBase {
       SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, speeds, Constants.SwerveConstants.maxLinearVelocityMeters, Constants.SwerveConstants.maxChassisTranslationalSpeed, Constants.SwerveConstants.maxChassisAngularVelocity);
 
       for(int i = 0; i < 4; ++i) {
-         this.moduleIO[i].setModuleState(swerveModuleStates[i], isOpenLoop);
+         this.moduleIO[i].setDesiredState(swerveModuleStates[i], isOpenLoop);
       }
 
    }
@@ -196,7 +196,7 @@ public class SwerveDrive extends SubsystemBase {
       SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, speeds,  Units.feetToMeters(12), Constants.SwerveConstants.maxChassisTranslationalSpeed, Constants.SwerveConstants.maxChassisAngularVelocity);
 
       for(int i = 0; i < 4; ++i) {
-         this.moduleIO[i].setModuleState(swerveModuleStates[i], false);
+         this.moduleIO[i].setDesiredState(swerveModuleStates[i], false);
       }
    }
 
@@ -207,7 +207,7 @@ public class SwerveDrive extends SubsystemBase {
       SwerveModuleState[] states = new SwerveModuleState[4];
 
       for(int i = 0; i < 4; ++i) {
-         states[i] = this.moduleIO[i].getModuleState();
+         states[i] = this.moduleIO[i].getSetpointModuleState();
       }
 
       return states;

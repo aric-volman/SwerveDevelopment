@@ -40,7 +40,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
     */
    public SwerveModuleIOSim(int num) {
       this.num = num;
-      turnPID.enableContinuousInput(0, Math.PI * 2.0);
+      turnPID.enableContinuousInput(-Math.PI, Math.PI);
    }
 
    public void setDriveVoltage(double voltage) {
@@ -53,7 +53,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
       this.turnSim.setInputVoltage(this.turnVolts);
    }
 
-   public void setModuleState(SwerveModuleState state, boolean isOpenLoop) {
+   public void setDesiredState(SwerveModuleState state, boolean isOpenLoop) {
 
       // Optimize state so that movement is minimized
       state = SwerveModuleState.optimize(state, new Rotation2d(this.turnSim.getAngularPositionRad()));
@@ -61,21 +61,21 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
       // Set internal state as passed-in state
       this.state = state;
 
-      double percent;
+      double velocity;
       if (isOpenLoop) {
          // Open loop doesn't work currently in simulation
          // Due to inaccuracy of simulation
-         percent = state.speedMetersPerSecond / Constants.SwerveConstants.maxLinearVelocityMeters;
-         SmartDashboard.putNumber("Open Loop Drive #" + this.num, percent);
-         this.driveSim.setInputVoltage(percent * 12.0);
+         velocity = state.speedMetersPerSecond / Constants.SwerveConstants.maxLinearVelocityMeters;
+         SmartDashboard.putNumber("Open Loop Drive #" + this.num, velocity);
+         this.driveSim.setInputVoltage(velocity * 12.0);
       } else {
          if (!(DriverStation.isDisabled() | DriverStation.isEStopped())) {  
             // Set setpoint of the drive PID controller
             this.drivePID.setSetpoint(state.speedMetersPerSecond);
 
             // Find measurement in m/s and calculate PID action
-            percent = this.driveSim.getAngularVelocityRadPerSec() * Math.PI * Constants.SwerveConstants.wheelDiameterMeters / Constants.SwerveConstants.driveGearRatio;
-            double output = this.drivePID.calculate(percent);
+            velocity = this.driveSim.getAngularVelocityRadPerSec() * Math.PI * Constants.SwerveConstants.wheelDiameterMeters / Constants.SwerveConstants.driveGearRatio;
+            double output = this.drivePID.calculate(velocity);
 
             // Output in volts to motor
             driveVolts = output;
@@ -106,14 +106,22 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
       return position;
    }
 
-   public SwerveModuleState getModuleState() {
+   public SwerveModuleState getSetpointModuleState() {
       // Returns module state
       return this.state;
    }
+
+   public SwerveModuleState getActualModuleState() {
+      double velocity = this.driveSim.getAngularVelocityRadPerSec() * Math.PI * Constants.SwerveConstants.wheelDiameterMeters / Constants.SwerveConstants.driveGearRatio;
+      double rotation = this.turnSim.getAngularPositionRad();
+      return new SwerveModuleState(velocity, Rotation2d.fromRadians(rotation));
+   }
+
 
    public void updateSim() {
       // Updates sim with certain dt of 0.02
       this.driveSim.update(0.02);
       this.turnSim.update(0.02);
    }
+
 }

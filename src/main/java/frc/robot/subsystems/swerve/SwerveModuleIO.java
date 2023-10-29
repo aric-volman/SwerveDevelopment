@@ -10,13 +10,20 @@ public interface SwerveModuleIO {
     * @param state State of module
     * @param isOpenLoop Whether to control open loop or close loop (PID)
     */
-   default void setModuleState(SwerveModuleState state, boolean isOpenLoop) {
+   default void setDesiredState(SwerveModuleState state, boolean isOpenLoop) {
    }
 
    /**
-    * Gets swerve module's state
+    * Gets swerve module's set state
     */
-   default SwerveModuleState getModuleState() {
+   default SwerveModuleState getSetpointModuleState() {
+      return null;
+   }
+
+   /**
+    * Gets swerve module's real state
+    */
+    default SwerveModuleState getActualModuleState() {
       return null;
    }
 
